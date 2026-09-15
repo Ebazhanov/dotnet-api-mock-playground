@@ -1,0 +1,17 @@
+# IDE Settings (Rider / VS Code)
+.idea/
+.vscode/
+*.user
+*.suo
+
+# Build & Output Folders
+**/bin/
+**/obj/
+
+# Test Results & Coverage
+TestResults/
+*.trx
+
+# NuGet Packages Cache
+*.nuget.props
+*.nuget.targets
