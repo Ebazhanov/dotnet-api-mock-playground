@@ -1,2 +1,8 @@
 <Solution>
+  <Folder Name="/src/">
+    <Project Path="src/RiskWorkflow.Core/RiskWorkflow.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/RiskWorkflow.UnitTests/RiskWorkflow.UnitTests.csproj" />
+  </Folder>
 </Solution>
