@@ -11,6 +11,8 @@
 # Test Results & Coverage
 TestResults/
 *.trx
+allure-report
+allure-report-input
 
 # NuGet Packages Cache
 *.nuget.props
