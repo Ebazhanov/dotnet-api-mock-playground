@@ -1,4 +1,4 @@
-name: Risk Decision Quality Gate
+name: C# Test Suite
 
 on:
   push:
