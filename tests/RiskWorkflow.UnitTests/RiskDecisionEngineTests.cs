@@ -1,8 +1,13 @@
-﻿using Xunit;
+﻿using System;
+using Allure.Net.Commons.Attributes;
 using RiskWorkflow.Core;
+using Shouldly;
+using Xunit;
 
 namespace RiskWorkflow.UnitTests;
 
+[AllureSuite("Unit Tests")]
+[AllureFeature("Business logic")]
 public class RiskDecisionEngineTests
 {
     private readonly RiskDecisionEngine _engine = new();
@@ -23,7 +28,7 @@ public class RiskDecisionEngineTests
         var result = _engine.EvaluateRisk(request);
 
         // Assert
-        Assert.Equal(RiskDecision.Approved, result);
+        result.ShouldBe(RiskDecision.Approved);
     }
 
     [Theory]
@@ -35,14 +40,14 @@ public class RiskDecisionEngineTests
         var request = new RiskRequest { Amount = invalidAmount, CreditScore = 700 };
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => _engine.EvaluateRisk(request));
+        Should.Throw<ArgumentException>(() => _engine.EvaluateRisk(request));
     }
 
     [Fact]
     public void EvaluateRisk_ShouldThrowArgumentNullException_WhenRequestIsNull()
     {
         // Act & Assert
-        Assert.Throws<ArgumentNullException>(() => _engine.EvaluateRisk(null!));
+        Should.Throw<ArgumentNullException>(() => _engine.EvaluateRisk(null!));
     }
 
     [Fact]
@@ -61,6 +66,6 @@ public class RiskDecisionEngineTests
         var result = _engine.EvaluateRisk(request);
 
         // Assert
-        Assert.Equal(RiskDecision.ManualReview, result);
+        result.ShouldBe(RiskDecision.ManualReview);
     }
 }

@@ -3,24 +3,27 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using FluentAssertions;
+using Allure.Net.Commons.Attributes;
 using Newtonsoft.Json;
+using Shouldly;
 using Xunit;
 
 namespace RiskWorkflow.IntegrationTests
 {
     public class HttpbinResponse
     {
-        public string Url { get; set; }
-        public string Json { get; set; }
+        public string Url { get; set; } = string.Empty;
+        public RiskCheckPayload? Json { get; set; }
     }
 
     public class RiskCheckPayload
     {
-        public string CustomerId { get; set; }
+        public string CustomerId { get; set; } = string.Empty;
         public decimal Amount { get; set; }
     }
 
+    [AllureSuite("Integration Tests")]
+    [AllureFeature("API workflows")]
     public class HttpbinIntegrationTests : IDisposable
     {
         private readonly HttpClient _httpClient;
@@ -39,13 +42,13 @@ namespace RiskWorkflow.IntegrationTests
         {
             HttpResponseMessage response = await _httpClient.GetAsync("/get");
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            string content = await response.ContentAsStringAsync();
+            string content = await response.Content.ReadAsStringAsync();
             var result = JsonConvert.DeserializeObject<HttpbinResponse>(content);
 
-            result.Should().NotBeNull();
-            result.Url.Should().Be("https://httpbin.org/get");
+            result.ShouldNotBeNull();
+            result.Url.ShouldBe("https://httpbin.org/get");
         }
 
         [Fact]
@@ -65,13 +68,15 @@ namespace RiskWorkflow.IntegrationTests
 
             HttpResponseMessage response = await _httpClient.PostAsync("/post", jsonContent);
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-            string content = await response.ContentAsStringAsync();
+            string content = await response.Content.ReadAsStringAsync();
             var result = JsonConvert.DeserializeObject<HttpbinResponse>(content);
 
-            result.Should().NotBeNull();
-            result.Json.Should().Contain("CUST-1001");
+            result.ShouldNotBeNull();
+            result.Json.ShouldNotBeNull();
+            result.Json.CustomerId.ShouldBe("CUST-1001");
+            result.Json.Amount.ShouldBe(500.00m);
         }
 
         public void Dispose()
