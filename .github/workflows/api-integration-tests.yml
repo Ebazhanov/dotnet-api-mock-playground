@@ -1,0 +1,79 @@
+name: Risk Decision Quality Gate
+
+on:
+  push:
+    branches: [ 'main' ]
+  pull_request:
+    branches: [ 'main' ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-and-report:
+    name: Tests & Allure Report
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.2.2
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+          cache: true
+          cache-dependency-path: '**/*.csproj'
+
+      - name: Restore Dependencies
+        run: dotnet restore
+
+      - name: Build Solution
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Execute Test Suite
+        run: dotnet test --configuration Release --no-build --logger "console;verbosity=detailed"
+        continue-on-error: true
+
+      - name: Install Allure CLI
+        if: always()
+        run: |
+          wget -q https://github.com/allure-framework/allure2/releases/download/2.29.0/allure-2.29.0.tgz
+          tar -zxf allure-2.29.0.tgz
+          sudo mv allure-2.29.0 /opt/allure
+          sudo ln -s /opt/allure/bin/allure /usr/bin/allure
+          rm allure-2.29.0.tgz
+
+      - name: Generate Allure Report
+        if: always()
+        run: allure generate **/allure-results -o allure-report --clean
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        if: always()
+        with:
+          path: ./allure-report
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: test-and-report
+    if: always() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    permissions:
+      pages: write
+      id-token: write
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
