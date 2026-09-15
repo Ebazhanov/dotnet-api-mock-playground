@@ -39,7 +39,7 @@ jobs:
         run: dotnet build --configuration Release --no-restore
 
       - name: Execute Test Suite
-        run: dotnet test --configuration Release --no-build --logger "console;verbosity=detailed"
+        run: dotnet test --configuration Release --no-build --logger "console;verbosity=detailed" -- xUnit.ReporterSwitch=allure
         continue-on-error: true
 
       - name: Install Allure CLI
