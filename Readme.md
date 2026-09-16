@@ -1,6 +1,6 @@
 ## C# playground
 
-Sandbox repository for testing API workflows using **C#**, **xUnit**, and **FluentAssertions**. Designed for practicing unit, integration, and mock testing patterns.
+Sandbox repository for testing API workflows using **C#**, **xUnit**, and **Shouldly**. Designed for practicing unit, integration, and mock testing patterns.
 
 ## Quick Start
 ### Prerequisites
